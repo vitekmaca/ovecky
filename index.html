@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Počítání oveček</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #0a0a2e 0%, #1a1a4e 40%, #2d1b69 100%);
+    color: #e8e0ff;
+    font-family: 'Georgia', serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    overflow: hidden;
+  }
+
+  .stars {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--dur) ease-in-out infinite;
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 1; }
+  }
+
+  .card {
+    position: relative;
+    z-index: 1;
+    background: rgba(255,255,255,0.07);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 24px;
+    padding: 2.5rem;
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  }
+
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 0.3rem;
+    text-shadow: 0 0 20px rgba(180,160,255,0.8);
+  }
+
+  .sheep-emoji { font-size: 2.5rem; }
+
+  .subtitle {
+    color: rgba(232,224,255,0.6);
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+  }
+
+  .field {
+    margin-bottom: 1.2rem;
+    text-align: left;
+  }
+
+  label {
+    display: block;
+    font-size: 0.85rem;
+    color: rgba(232,224,255,0.7);
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  select, input[type="number"] {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    color: #e8e0ff;
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  select:focus, input[type="number"]:focus {
+    border-color: rgba(180,160,255,0.7);
+  }
+
+  select option { background: #1a1a4e; }
+
+  .speed-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .speed-btn {
+    flex: 1;
+    padding: 0.5rem;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    color: rgba(232,224,255,0.7);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .speed-btn.active {
+    background: rgba(180,160,255,0.25);
+    border-color: rgba(180,160,255,0.6);
+    color: #e8e0ff;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    border-radius: 14px;
+    font-size: 1.1rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 0.5rem;
+  }
+
+  .btn-start {
+    background: linear-gradient(135deg, #7c5cbf, #a878e8);
+    color: white;
+    box-shadow: 0 4px 20px rgba(168,120,232,0.4);
+  }
+
+  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(168,120,232,0.5); }
+  .btn-start:active { transform: translateY(0); }
+
+  .btn-stop {
+    background: rgba(255,100,100,0.2);
+    border: 1px solid rgba(255,100,100,0.4);
+    color: #ffaaaa;
+    display: none;
+  }
+
+  .btn-stop:hover { background: rgba(255,100,100,0.3); }
+
+  /* Playback display */
+  .playback {
+    display: none;
+    margin-top: 2rem;
+    animation: fadeIn 0.4s ease;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .current-sheep {
+    font-size: 4rem;
+    margin-bottom: 0.3rem;
+    filter: drop-shadow(0 0 20px rgba(255,255,200,0.6));
+  }
+
+  .current-text {
+    font-size: 1.4rem;
+    color: rgba(232,224,255,0.9);
+    min-height: 2rem;
+    transition: opacity 0.3s;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    margin-top: 1.2rem;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #7c5cbf, #a878e8);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+
+  .done-msg {
+    display: none;
+    margin-top: 1rem;
+    color: rgba(232,224,255,0.6);
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+
+  /* Moon deco */
+  .moon {
+    position: fixed;
+    top: 3rem;
+    right: 3rem;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle at 35% 35%, #fffde7, #ffd54f);
+    border-radius: 50%;
+    box-shadow: 0 0 40px rgba(255,213,79,0.4), 0 0 80px rgba(255,213,79,0.2);
+    z-index: 0;
+  }
+
+  /* Floating sheep animation */
+  .sheep-parade {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .parade-sheep {
+    position: absolute;
+    font-size: 2rem;
+    bottom: 10px;
+    animation: walkRight linear infinite;
+    opacity: 0.4;
+  }
+
+  @keyframes walkRight {
+    from { transform: translateX(-80px); }
+    to { transform: translateX(calc(100vw + 80px)); }
+  }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+<div class="moon"></div>
+<div class="sheep-parade" id="parade"></div>
+
+<div class="card">
+  <div class="sheep-emoji">🐑</div>
+  <h1 id="title">Počítání oveček</h1>
+  <p class="subtitle" id="subtitle">Usni klidně a sni...</p>
+
+  <div class="field">
+    <label id="lbl-lang">Jazyk / Sprache</label>
+    <select id="lang">
+      <option value="cs">🇨🇿 Čeština</option>
+      <option value="de">🇩🇪 Deutsch</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label id="lbl-count">Počet oveček</label>
+    <input type="number" id="count" value="20" min="1" max="999">
+  </div>
+
+  <div class="field">
+    <label id="lbl-speed">Rychlost</label>
+    <div class="speed-row">
+      <button class="speed-btn" data-pause="5000">🐢 Pomalu</button>
+      <button class="speed-btn active" data-pause="3500">🐑 Normálně</button>
+      <button class="speed-btn" data-pause="1800">🐇 Rychle</button>
+    </div>
+  </div>
+
+  <button class="btn btn-start" id="btnStart" onclick="startCounting()">▶ Začít počítat</button>
+  <button class="btn btn-stop" id="btnStop" onclick="stopCounting()">⏹ Zastavit</button>
+
+  <div class="playback" id="playback">
+    <div class="current-sheep" id="sheepEmoji">🐑</div>
+    <div class="current-text" id="currentText"></div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <div class="done-msg" id="doneMsg">😴 Sladké sny... / Süße Träume...</div>
+</div>
+
+<script>
+// ── Language data ──────────────────────────────────────────────
+const LANGS = {
+  cs: {
+    title: 'Počítání oveček',
+    subtitle: 'Usni klidně a sni...',
+    lblCount: 'Počet oveček',
+    lblSpeed: 'Rychlost',
+    startBtn: '▶ Začít počítat',
+    voiceName: ['Czech', 'cs'],   // substrings to match
+    // Czech grammatical forms
+    sheepWord: (n) => {
+      if (n === 1) return 'ovečka';
+      if (n >= 2 && n <= 4) return 'ovečky';
+      return 'oveček';
+    },
+    numberWord: (n) => czechNumber(n),
+    buildText: (n) => {
+      const nw = czechNumber(n);
+      const sw = czechSheepForm(n);
+      return `${nw} ${sw}`;
+    },
+    voiceLang: 'cs-CZ',
+  },
+  de: {
+    title: 'Schäfchen zählen',
+    subtitle: 'Schlaf gut und träum schön...',
+    lblCount: 'Anzahl Schäfchen',
+    lblSpeed: 'Geschwindigkeit',
+    startBtn: '▶ Zählen beginnen',
+    buildText: (n) => `${n} Schäfchen`,
+    voiceLang: 'de-DE',
+  },
+};
+
+// Czech number words (1–20, then tens)
+function czechNumber(n) {
+  const ones = ['','jedna','dvě','tři','čtyři','pět','šest','sedm','osm','devět',
+                 'deset','jedenáct','dvanáct','třináct','čtrnáct','patnáct',
+                 'šestnáct','sedmnáct','osmnáct','devatenáct','dvacet'];
+  const tens = ['','','dvacet','třicet','čtyřicet','padesát','šedesát','sedmdesát','osmdesát','devadesát'];
+  const hundreds = ['','sto','dvě stě','tři sta','čtyři sta','pět set','šest set','sedm set','osm set','devět set'];
+
+  if (n <= 20) return ones[n];
+  if (n < 100) {
+    const t = Math.floor(n / 10);
+    const o = n % 10;
+    return o === 0 ? tens[t] : tens[t] + ' ' + ones[o];
+  }
+  if (n < 1000) {
+    const h = Math.floor(n / 100);
+    const rest = n % 100;
+    return rest === 0 ? hundreds[h] : hundreds[h] + ' ' + czechNumber(rest);
+  }
+  return String(n);
+}
+
+function czechSheepForm(n) {
+  if (n === 1) return 'ovečka';
+  if (n >= 2 && n <= 4) return 'ovečky';
+  return 'oveček';
+}
+
+// ── Stars ──────────────────────────────────────────────────────
+(function createStars() {
+  const container = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 2.5 + 0.5;
+    s.style.cssText = `
+      width:${size}px; height:${size}px;
+      top:${Math.random()*100}%;
+      left:${Math.random()*100}%;
+      --dur:${2 + Math.random()*4}s;
+      animation-delay:${Math.random()*5}s;
+    `;
+    container.appendChild(s);
+  }
+})();
+
+// ── Parade sheep ───────────────────────────────────────────────
+(function createParade() {
+  const container = document.getElementById('parade');
+  for (let i = 0; i < 5; i++) {
+    const s = document.createElement('div');
+    s.className = 'parade-sheep';
+    s.textContent = '🐑';
+    const dur = 18 + Math.random() * 14;
+    s.style.cssText = `
+      animation-duration:${dur}s;
+      animation-delay:-${Math.random()*dur}s;
+      font-size:${1.5 + Math.random()}rem;
+    `;
+    container.appendChild(s);
+  }
+})();
+
+// ── Speed buttons ──────────────────────────────────────────────
+let pauseMs = 3500;
+document.querySelectorAll('.speed-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    pauseMs = parseInt(btn.dataset.pause);
+  });
+});
+
+// ── Language switching ─────────────────────────────────────────
+document.getElementById('lang').addEventListener('change', applyLang);
+function applyLang() {
+  const lang = document.getElementById('lang').value;
+  const d = LANGS[lang];
+  document.getElementById('title').textContent = d.title;
+  document.getElementById('subtitle').textContent = d.subtitle;
+  document.getElementById('lbl-count').textContent = lang === 'cs' ? 'Počet oveček' : 'Anzahl Schäfchen';
+  document.getElementById('lbl-speed').textContent = lang === 'cs' ? 'Rychlost' : 'Geschwindigkeit';
+  document.getElementById('btnStart').textContent = d.startBtn;
+}
+
+// ── Speech synthesis ───────────────────────────────────────────
+function getVoice(lang) {
+  const voices = speechSynthesis.getVoices();
+  const langCode = LANGS[lang].voiceLang;
+  // Try exact match first, then prefix
+  return voices.find(v => v.lang === langCode)
+      || voices.find(v => v.lang.startsWith(langCode.split('-')[0]))
+      || null;
+}
+
+function speak(text, lang) {
+  return new Promise(resolve => {
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang = LANGS[lang].voiceLang;
+    utt.rate = 0.85;
+    utt.pitch = 0.9;
+    const voice = getVoice(lang);
+    if (voice) utt.voice = voice;
+    utt.onend = resolve;
+    utt.onerror = resolve;
+    speechSynthesis.speak(utt);
+  });
+}
+
+// ── Counting logic ─────────────────────────────────────────────
+let running = false;
+let stopFlag = false;
+
+async function startCounting() {
+  if (running) return;
+  const lang = document.getElementById('lang').value;
+  const total = parseInt(document.getElementById('count').value) || 10;
+
+  running = true;
+  stopFlag = false;
+
+  document.getElementById('btnStart').style.display = 'none';
+  document.getElementById('btnStop').style.display = 'block';
+  document.getElementById('playback').style.display = 'block';
+  document.getElementById('doneMsg').style.display = 'none';
+
+  // Load voices (Safari/Chrome need a moment)
+  if (speechSynthesis.getVoices().length === 0) {
+    await new Promise(r => { speechSynthesis.onvoiceschanged = r; setTimeout(r, 1000); });
+  }
+
+  for (let i = 1; i <= total; i++) {
+    if (stopFlag) break;
+
+    const text = LANGS[lang].buildText(i);
+    document.getElementById('currentText').textContent = text;
+    document.getElementById('progressFill').style.width = `${(i / total) * 100}%`;
+
+    // Animate sheep
+    const emojis = ['🐑','🐏','🐑','🐑','🐏'];
+    document.getElementById('sheepEmoji').textContent = emojis[i % emojis.length];
+
+    await speak(text, lang);
+    if (stopFlag) break;
+
+    // Pause between sheep
+    await new Promise(r => setTimeout(r, pauseMs - 500)); // subtract avg speech time
+  }
+
+  running = false;
+  document.getElementById('btnStart').style.display = 'block';
+  document.getElementById('btnStop').style.display = 'none';
+
+  if (!stopFlag) {
+    document.getElementById('doneMsg').style.display = 'block';
+    document.getElementById('currentText').textContent = '😴 zzz...';
+    document.getElementById('progressFill').style.width = '100%';
+  }
+}
+
+function stopCounting() {
+  stopFlag = true;
+  speechSynthesis.cancel();
+  running = false;
+  document.getElementById('btnStart').style.display = 'block';
+  document.getElementById('btnStop').style.display = 'none';
+}
+
+// Init
+applyLang();
+</script>
+</body>
+</html>
