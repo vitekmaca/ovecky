@@ -154,7 +154,6 @@
 
   .btn-stop:hover { background: rgba(255,100,100,0.3); }
 
-  /* Playback display */
   .playback {
     display: none;
     margin-top: 2rem;
@@ -173,7 +172,6 @@
     font-size: 1.4rem;
     color: rgba(232,224,255,0.9);
     min-height: 2rem;
-    transition: opacity 0.3s;
   }
 
   .progress-bar {
@@ -201,7 +199,12 @@
     font-style: italic;
   }
 
-  /* Moon deco */
+  .limit-note {
+    font-size: 0.75rem;
+    color: rgba(232,224,255,0.4);
+    margin-top: 0.3rem;
+  }
+
   .moon {
     position: fixed;
     top: 3rem;
@@ -214,7 +217,6 @@
     z-index: 0;
   }
 
-  /* Floating sheep animation */
   .sheep-parade {
     position: fixed;
     bottom: 0;
@@ -252,8 +254,8 @@
   <p class="subtitle" id="subtitle">Usni klidně a sni...</p>
 
   <div class="field">
-    <label id="lbl-lang">Jazyk / Sprache</label>
-    <select id="lang">
+    <label>Jazyk / Sprache</label>
+    <select id="lang" onchange="applyLang()">
       <option value="cs">🇨🇿 Čeština</option>
       <option value="de">🇩🇪 Deutsch</option>
     </select>
@@ -261,15 +263,16 @@
 
   <div class="field">
     <label id="lbl-count">Počet oveček</label>
-    <input type="number" id="count" value="20" min="1" max="999">
+    <input type="number" id="count" value="20" min="1" max="30">
+    <div class="limit-note" id="limit-note">Předgenerováno 1–30 oveček</div>
   </div>
 
   <div class="field">
-    <label id="lbl-speed">Rychlost</label>
+    <label id="lbl-speed">Pauza mezi ovečkami</label>
     <div class="speed-row">
-      <button class="speed-btn" data-pause="5000">🐢 Pomalu</button>
-      <button class="speed-btn active" data-pause="3500">🐑 Normálně</button>
-      <button class="speed-btn" data-pause="1800">🐇 Rychle</button>
+      <button class="speed-btn" data-pause="6000" onclick="setSpeed(this)">🐢 Pomalu</button>
+      <button class="speed-btn active" data-pause="3500" onclick="setSpeed(this)">🐑 Normálně</button>
+      <button class="speed-btn" data-pause="2000" onclick="setSpeed(this)">🐇 Rychle</button>
     </div>
   </div>
 
@@ -286,157 +289,112 @@
 </div>
 
 <script>
-// ── Language data ──────────────────────────────────────────────
-const LANGS = {
+const TEXTS = {
   cs: {
     title: 'Počítání oveček',
     subtitle: 'Usni klidně a sni...',
     lblCount: 'Počet oveček',
-    lblSpeed: 'Rychlost',
+    lblSpeed: 'Pauza mezi ovečkami',
     startBtn: '▶ Začít počítat',
-    voiceName: ['Czech', 'cs'],   // substrings to match
-    // Czech grammatical forms
-    sheepWord: (n) => {
-      if (n === 1) return 'ovečka';
-      if (n >= 2 && n <= 4) return 'ovečky';
-      return 'oveček';
-    },
-    numberWord: (n) => czechNumber(n),
-    buildText: (n) => {
-      const nw = czechNumber(n);
-      const sw = czechSheepForm(n);
-      return `${nw} ${sw}`;
-    },
-    voiceLang: 'cs-CZ',
+    limitNote: 'Předgenerováno 1–30 oveček',
+    labels: ['🐢 Pomalu','🐑 Normálně','🐇 Rychle'],
+    sheep: ['jedna ovečka','dvě ovečky','tři ovečky','čtyři ovečky','pět oveček',
+            'šest oveček','sedm oveček','osm oveček','devět oveček','deset oveček',
+            'jedenáct oveček','dvanáct oveček','třináct oveček','čtrnáct oveček','patnáct oveček',
+            'šestnáct oveček','sedmnáct oveček','osmnáct oveček','devatenáct oveček','dvacet oveček',
+            'dvacet jedna oveček','dvacet dvě ovečky','dvacet tři ovečky','dvacet čtyři ovečky','dvacet pět oveček',
+            'dvacet šest oveček','dvacet sedm oveček','dvacet osm oveček','dvacet devět oveček','třicet oveček'],
+    dir: 'audio_cs',
   },
   de: {
     title: 'Schäfchen zählen',
     subtitle: 'Schlaf gut und träum schön...',
     lblCount: 'Anzahl Schäfchen',
-    lblSpeed: 'Geschwindigkeit',
+    lblSpeed: 'Pause zwischen Schäfchen',
     startBtn: '▶ Zählen beginnen',
-    buildText: (n) => `${n} Schäfchen`,
-    voiceLang: 'de-DE',
+    limitNote: 'Vorerzeugt: 1–30 Schäfchen',
+    labels: ['🐢 Langsam','🐑 Normal','🐇 Schnell'],
+    sheep: ['ein Schäfchen','zwei Schäfchen','drei Schäfchen','vier Schäfchen','fünf Schäfchen',
+            'sechs Schäfchen','sieben Schäfchen','acht Schäfchen','neun Schäfchen','zehn Schäfchen',
+            'elf Schäfchen','zwölf Schäfchen','dreizehn Schäfchen','vierzehn Schäfchen','fünfzehn Schäfchen',
+            'sechzehn Schäfchen','siebzehn Schäfchen','achtzehn Schäfchen','neunzehn Schäfchen','zwanzig Schäfchen',
+            'einundzwanzig Schäfchen','zweiundzwanzig Schäfchen','dreiundzwanzig Schäfchen','vierundzwanzig Schäfchen','fünfundzwanzig Schäfchen',
+            'sechsundzwanzig Schäfchen','siebenundzwanzig Schäfchen','achtundzwanzig Schäfchen','neunundzwanzig Schäfchen','dreißig Schäfchen'],
+    dir: 'audio_de',
   },
 };
 
-// Czech number words (1–20, then tens)
-function czechNumber(n) {
-  const ones = ['','jedna','dvě','tři','čtyři','pět','šest','sedm','osm','devět',
-                 'deset','jedenáct','dvanáct','třináct','čtrnáct','patnáct',
-                 'šestnáct','sedmnáct','osmnáct','devatenáct','dvacet'];
-  const tens = ['','','dvacet','třicet','čtyřicet','padesát','šedesát','sedmdesát','osmdesát','devadesát'];
-  const hundreds = ['','sto','dvě stě','tři sta','čtyři sta','pět set','šest set','sedm set','osm set','devět set'];
-
-  if (n <= 20) return ones[n];
-  if (n < 100) {
-    const t = Math.floor(n / 10);
-    const o = n % 10;
-    return o === 0 ? tens[t] : tens[t] + ' ' + ones[o];
-  }
-  if (n < 1000) {
-    const h = Math.floor(n / 100);
-    const rest = n % 100;
-    return rest === 0 ? hundreds[h] : hundreds[h] + ' ' + czechNumber(rest);
-  }
-  return String(n);
-}
-
-function czechSheepForm(n) {
-  if (n === 1) return 'ovečka';
-  if (n >= 2 && n <= 4) return 'ovečky';
-  return 'oveček';
-}
-
-// ── Stars ──────────────────────────────────────────────────────
-(function createStars() {
-  const container = document.getElementById('stars');
+// Stars
+(function() {
+  const c = document.getElementById('stars');
   for (let i = 0; i < 120; i++) {
     const s = document.createElement('div');
     s.className = 'star';
-    const size = Math.random() * 2.5 + 0.5;
-    s.style.cssText = `
-      width:${size}px; height:${size}px;
-      top:${Math.random()*100}%;
-      left:${Math.random()*100}%;
-      --dur:${2 + Math.random()*4}s;
-      animation-delay:${Math.random()*5}s;
-    `;
-    container.appendChild(s);
+    const sz = Math.random() * 2.5 + 0.5;
+    s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--dur:${2+Math.random()*4}s;animation-delay:${Math.random()*5}s;`;
+    c.appendChild(s);
   }
 })();
 
-// ── Parade sheep ───────────────────────────────────────────────
-(function createParade() {
-  const container = document.getElementById('parade');
+// Parade
+(function() {
+  const c = document.getElementById('parade');
   for (let i = 0; i < 5; i++) {
     const s = document.createElement('div');
     s.className = 'parade-sheep';
     s.textContent = '🐑';
     const dur = 18 + Math.random() * 14;
-    s.style.cssText = `
-      animation-duration:${dur}s;
-      animation-delay:-${Math.random()*dur}s;
-      font-size:${1.5 + Math.random()}rem;
-    `;
-    container.appendChild(s);
+    s.style.cssText = `animation-duration:${dur}s;animation-delay:-${Math.random()*dur}s;font-size:${1.5+Math.random()}rem;`;
+    c.appendChild(s);
   }
 })();
 
-// ── Speed buttons ──────────────────────────────────────────────
 let pauseMs = 3500;
-document.querySelectorAll('.speed-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    pauseMs = parseInt(btn.dataset.pause);
-  });
-});
+function setSpeed(btn) {
+  document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  pauseMs = parseInt(btn.dataset.pause);
+}
 
-// ── Language switching ─────────────────────────────────────────
-document.getElementById('lang').addEventListener('change', applyLang);
 function applyLang() {
   const lang = document.getElementById('lang').value;
-  const d = LANGS[lang];
+  const d = TEXTS[lang];
   document.getElementById('title').textContent = d.title;
   document.getElementById('subtitle').textContent = d.subtitle;
-  document.getElementById('lbl-count').textContent = lang === 'cs' ? 'Počet oveček' : 'Anzahl Schäfchen';
-  document.getElementById('lbl-speed').textContent = lang === 'cs' ? 'Rychlost' : 'Geschwindigkeit';
+  document.getElementById('lbl-count').textContent = d.lblCount;
+  document.getElementById('lbl-speed').textContent = d.lblSpeed;
   document.getElementById('btnStart').textContent = d.startBtn;
+  document.getElementById('limit-note').textContent = d.limitNote;
+  const btns = document.querySelectorAll('.speed-btn');
+  d.labels.forEach((l, i) => btns[i].textContent = l);
 }
 
-// ── Speech synthesis ───────────────────────────────────────────
-function getVoice(lang) {
-  const voices = speechSynthesis.getVoices();
-  const langCode = LANGS[lang].voiceLang;
-  // Try exact match first, then prefix
-  return voices.find(v => v.lang === langCode)
-      || voices.find(v => v.lang.startsWith(langCode.split('-')[0]))
-      || null;
-}
+let running = false;
+let stopFlag = false;
+let currentAudio = null;
+let sleepTimer = null;
 
-function speak(text, lang) {
+function playAudio(src) {
   return new Promise(resolve => {
-    const utt = new SpeechSynthesisUtterance(text);
-    utt.lang = LANGS[lang].voiceLang;
-    utt.rate = 0.85;
-    utt.pitch = 0.9;
-    const voice = getVoice(lang);
-    if (voice) utt.voice = voice;
-    utt.onend = resolve;
-    utt.onerror = resolve;
-    speechSynthesis.speak(utt);
+    const audio = new Audio(src);
+    currentAudio = audio;
+    audio.onended = resolve;
+    audio.onerror = resolve;
+    audio.play().catch(resolve);
   });
 }
 
-// ── Counting logic ─────────────────────────────────────────────
-let running = false;
-let stopFlag = false;
+function sleep(ms) {
+  return new Promise(resolve => {
+    sleepTimer = setTimeout(resolve, ms);
+  });
+}
 
 async function startCounting() {
   if (running) return;
   const lang = document.getElementById('lang').value;
-  const total = parseInt(document.getElementById('count').value) || 10;
+  const d = TEXTS[lang];
+  const total = Math.min(parseInt(document.getElementById('count').value) || 20, 30);
 
   running = true;
   stopFlag = false;
@@ -445,28 +403,21 @@ async function startCounting() {
   document.getElementById('btnStop').style.display = 'block';
   document.getElementById('playback').style.display = 'block';
   document.getElementById('doneMsg').style.display = 'none';
+  document.getElementById('progressFill').style.width = '0%';
 
-  // Load voices (Safari/Chrome need a moment)
-  if (speechSynthesis.getVoices().length === 0) {
-    await new Promise(r => { speechSynthesis.onvoiceschanged = r; setTimeout(r, 1000); });
-  }
+  const emojis = ['🐑','🐏','🐑','🐑','🐏'];
 
   for (let i = 1; i <= total; i++) {
     if (stopFlag) break;
 
-    const text = LANGS[lang].buildText(i);
-    document.getElementById('currentText').textContent = text;
+    document.getElementById('currentText').textContent = d.sheep[i - 1];
     document.getElementById('progressFill').style.width = `${(i / total) * 100}%`;
-
-    // Animate sheep
-    const emojis = ['🐑','🐏','🐑','🐑','🐏'];
     document.getElementById('sheepEmoji').textContent = emojis[i % emojis.length];
 
-    await speak(text, lang);
+    await playAudio(`${d.dir}/${i}.mp3`);
     if (stopFlag) break;
 
-    // Pause between sheep
-    await new Promise(r => setTimeout(r, pauseMs - 500)); // subtract avg speech time
+    await sleep(pauseMs);
   }
 
   running = false;
@@ -482,13 +433,13 @@ async function startCounting() {
 
 function stopCounting() {
   stopFlag = true;
-  speechSynthesis.cancel();
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  if (sleepTimer) { clearTimeout(sleepTimer); sleepTimer = null; }
   running = false;
   document.getElementById('btnStart').style.display = 'block';
   document.getElementById('btnStop').style.display = 'none';
 }
 
-// Init
 applyLang();
 </script>
 </body>
