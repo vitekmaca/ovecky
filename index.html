@@ -20,226 +20,78 @@
     overflow: hidden;
   }
 
-  .stars {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .star {
-    position: absolute;
-    background: white;
-    border-radius: 50%;
-    animation: twinkle var(--dur) ease-in-out infinite;
-  }
-
-  @keyframes twinkle {
-    0%, 100% { opacity: 0.2; }
-    50% { opacity: 1; }
-  }
+  .stars { position: fixed; top:0;left:0;right:0;bottom:0; pointer-events:none; z-index:0; }
+  .star { position:absolute; background:white; border-radius:50%; animation: twinkle var(--dur) ease-in-out infinite; }
+  @keyframes twinkle { 0%,100%{opacity:.2} 50%{opacity:1} }
 
   .card {
-    position: relative;
-    z-index: 1;
+    position: relative; z-index: 1;
     background: rgba(255,255,255,0.07);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255,255,255,0.15);
     border-radius: 24px;
     padding: 2.5rem;
-    max-width: 480px;
-    width: 100%;
+    max-width: 480px; width: 100%;
     text-align: center;
     box-shadow: 0 8px 40px rgba(0,0,0,0.4);
   }
 
-  h1 {
-    font-size: 2rem;
-    margin-bottom: 0.3rem;
-    text-shadow: 0 0 20px rgba(180,160,255,0.8);
-  }
+  h1 { font-size:2rem; margin-bottom:.3rem; text-shadow:0 0 20px rgba(180,160,255,.8); }
+  .sheep-emoji { font-size:2.5rem; }
+  .subtitle { color:rgba(232,224,255,.6); font-size:.9rem; margin-bottom:2rem; }
 
-  .sheep-emoji { font-size: 2.5rem; }
-
-  .subtitle {
-    color: rgba(232,224,255,0.6);
-    font-size: 0.9rem;
-    margin-bottom: 2rem;
-  }
-
-  .field {
-    margin-bottom: 1.2rem;
-    text-align: left;
-  }
-
-  label {
-    display: block;
-    font-size: 0.85rem;
-    color: rgba(232,224,255,0.7);
-    margin-bottom: 0.4rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-  }
+  .field { margin-bottom:1.2rem; text-align:left; }
+  label { display:block; font-size:.85rem; color:rgba(232,224,255,.7); margin-bottom:.4rem; letter-spacing:.05em; text-transform:uppercase; }
 
   select, input[type="number"] {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 12px;
-    color: #e8e0ff;
-    font-size: 1rem;
-    font-family: inherit;
-    outline: none;
-    transition: border-color 0.2s;
+    width:100%; padding:.75rem 1rem;
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.2);
+    border-radius:12px; color:#e8e0ff;
+    font-size:1rem; font-family:inherit; outline:none;
+    transition:border-color .2s;
   }
+  select:focus, input[type="number"]:focus { border-color:rgba(180,160,255,.7); }
+  select option { background:#1a1a4e; }
 
-  select:focus, input[type="number"]:focus {
-    border-color: rgba(180,160,255,0.7);
-  }
-
-  select option { background: #1a1a4e; }
-
-  .speed-row {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1.2rem;
-  }
-
+  .speed-row { display:flex; gap:.5rem; margin-bottom:1.2rem; }
   .speed-btn {
-    flex: 1;
-    padding: 0.5rem;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 10px;
-    color: rgba(232,224,255,0.7);
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: all 0.15s;
+    flex:1; padding:.5rem;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.15);
+    border-radius:10px; color:rgba(232,224,255,.7);
+    font-size:.8rem; cursor:pointer; transition:all .15s;
   }
-
-  .speed-btn.active {
-    background: rgba(180,160,255,0.25);
-    border-color: rgba(180,160,255,0.6);
-    color: #e8e0ff;
-  }
+  .speed-btn.active { background:rgba(180,160,255,.25); border-color:rgba(180,160,255,.6); color:#e8e0ff; }
 
   .btn {
-    width: 100%;
-    padding: 1rem;
-    border: none;
-    border-radius: 14px;
-    font-size: 1.1rem;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-top: 0.5rem;
+    width:100%; padding:1rem; border:none;
+    border-radius:14px; font-size:1.1rem;
+    font-family:inherit; cursor:pointer; transition:all .2s; margin-top:.5rem;
   }
+  .btn-start { background:linear-gradient(135deg,#7c5cbf,#a878e8); color:white; box-shadow:0 4px 20px rgba(168,120,232,.4); }
+  .btn-start:hover { transform:translateY(-2px); box-shadow:0 6px 28px rgba(168,120,232,.5); }
+  .btn-stop { background:rgba(255,100,100,.2); border:1px solid rgba(255,100,100,.4); color:#ffaaaa; display:none; }
+  .btn-stop:hover { background:rgba(255,100,100,.3); }
 
-  .btn-start {
-    background: linear-gradient(135deg, #7c5cbf, #a878e8);
-    color: white;
-    box-shadow: 0 4px 20px rgba(168,120,232,0.4);
-  }
+  .playback { display:none; margin-top:2rem; animation:fadeIn .4s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
-  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(168,120,232,0.5); }
-  .btn-start:active { transform: translateY(0); }
+  .current-sheep { font-size:4rem; margin-bottom:.3rem; filter:drop-shadow(0 0 20px rgba(255,255,200,.6)); }
+  .current-text { font-size:1.4rem; color:rgba(232,224,255,.9); min-height:2rem; }
 
-  .btn-stop {
-    background: rgba(255,100,100,0.2);
-    border: 1px solid rgba(255,100,100,0.4);
-    color: #ffaaaa;
-    display: none;
-  }
+  .progress-bar { width:100%; height:6px; background:rgba(255,255,255,.1); border-radius:3px; margin-top:1.2rem; overflow:hidden; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,#7c5cbf,#a878e8); border-radius:3px; transition:width .5s ease; width:0%; }
 
-  .btn-stop:hover { background: rgba(255,100,100,0.3); }
+  .done-msg { display:none; margin-top:1rem; color:rgba(232,224,255,.6); font-size:.9rem; font-style:italic; }
 
-  .playback {
-    display: none;
-    margin-top: 2rem;
-    animation: fadeIn 0.4s ease;
-  }
+  .moon { position:fixed; top:3rem; right:3rem; width:80px; height:80px;
+    background:radial-gradient(circle at 35% 35%,#fffde7,#ffd54f);
+    border-radius:50%; box-shadow:0 0 40px rgba(255,213,79,.4),0 0 80px rgba(255,213,79,.2); z-index:0; }
 
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-  .current-sheep {
-    font-size: 4rem;
-    margin-bottom: 0.3rem;
-    filter: drop-shadow(0 0 20px rgba(255,255,200,0.6));
-  }
-
-  .current-text {
-    font-size: 1.4rem;
-    color: rgba(232,224,255,0.9);
-    min-height: 2rem;
-  }
-
-  .progress-bar {
-    width: 100%;
-    height: 6px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 3px;
-    margin-top: 1.2rem;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #7c5cbf, #a878e8);
-    border-radius: 3px;
-    transition: width 0.5s ease;
-    width: 0%;
-  }
-
-  .done-msg {
-    display: none;
-    margin-top: 1rem;
-    color: rgba(232,224,255,0.6);
-    font-size: 0.9rem;
-    font-style: italic;
-  }
-
-  .limit-note {
-    font-size: 0.75rem;
-    color: rgba(232,224,255,0.4);
-    margin-top: 0.3rem;
-  }
-
-  .moon {
-    position: fixed;
-    top: 3rem;
-    right: 3rem;
-    width: 80px;
-    height: 80px;
-    background: radial-gradient(circle at 35% 35%, #fffde7, #ffd54f);
-    border-radius: 50%;
-    box-shadow: 0 0 40px rgba(255,213,79,0.4), 0 0 80px rgba(255,213,79,0.2);
-    z-index: 0;
-  }
-
-  .sheep-parade {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 80px;
-    z-index: 0;
-    overflow: hidden;
-    pointer-events: none;
-  }
-
-  .parade-sheep {
-    position: absolute;
-    font-size: 2rem;
-    bottom: 10px;
-    animation: walkRight linear infinite;
-    opacity: 0.4;
-  }
-
-  @keyframes walkRight {
-    from { transform: translateX(-80px); }
-    to { transform: translateX(calc(100vw + 80px)); }
-  }
+  .sheep-parade { position:fixed; bottom:0;left:0;right:0; height:80px; z-index:0; overflow:hidden; pointer-events:none; }
+  .parade-sheep { position:absolute; bottom:10px; animation:walkRight linear infinite; opacity:.4; }
+  @keyframes walkRight { from{transform:translateX(-80px)} to{transform:translateX(calc(100vw + 80px))} }
 </style>
 </head>
 <body>
@@ -254,25 +106,25 @@
   <p class="subtitle" id="subtitle">Usni klidně a sni...</p>
 
   <div class="field">
-    <label>Jazyk / Sprache</label>
-    <select id="lang" onchange="applyLang()">
-      <option value="cs">🇨🇿 Čeština</option>
-      <option value="de">🇩🇪 Deutsch</option>
+    <label id="lbl-voice">Hlas</label>
+    <select id="voice" onchange="applyVoice()">
+      <option value="antonin">🇨🇿 Antonín (čeština, muž)</option>
+      <option value="leni">🇨🇭 Leni (Schweizerdeutsch, Frau)</option>
+      <option value="jan">🇨🇭 Jan (Schweizerdeutsch, Mann)</option>
     </select>
   </div>
 
   <div class="field">
     <label id="lbl-count">Počet oveček</label>
-    <input type="number" id="count" value="20" min="1" max="30">
-    <div class="limit-note" id="limit-note">Předgenerováno 1–30 oveček</div>
+    <input type="number" id="count" value="20" min="1" max="100">
   </div>
 
   <div class="field">
-    <label id="lbl-speed">Pauza mezi ovečkami</label>
+    <label id="lbl-speed">Tempo</label>
     <div class="speed-row">
-      <button class="speed-btn" data-pause="6000" onclick="setSpeed(this)">🐢 Pomalu</button>
-      <button class="speed-btn active" data-pause="3500" onclick="setSpeed(this)">🐑 Normálně</button>
-      <button class="speed-btn" data-pause="2000" onclick="setSpeed(this)">🐇 Rychle</button>
+      <button class="speed-btn" data-total="8000" onclick="setSpeed(this)">🐢 Pomalu</button>
+      <button class="speed-btn active" data-total="5000" onclick="setSpeed(this)">🐑 Normálně</button>
+      <button class="speed-btn" data-total="2500" onclick="setSpeed(this)">🐇 Rychle</button>
     </div>
   </div>
 
@@ -285,162 +137,190 @@
     <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
   </div>
 
-  <div class="done-msg" id="doneMsg">😴 Sladké sny... / Süße Träume...</div>
+  <div class="done-msg" id="doneMsg"></div>
 </div>
 
 <script>
-const TEXTS = {
-  cs: {
+const VOICES = {
+  antonin: {
+    dir: 'audio_antonin',
+    lang: 'cs',
+    labelVoice: 'Hlas',
+    labelCount: 'Počet oveček',
+    labelSpeed: 'Tempo',
+    startBtn: '▶ Začít počítat',
+    stopBtn: '⏹ Zastavit',
+    speedLabels: ['🐢 Pomalu','🐑 Normálně','🐇 Rychle'],
     title: 'Počítání oveček',
     subtitle: 'Usni klidně a sni...',
-    lblCount: 'Počet oveček',
-    lblSpeed: 'Pauza mezi ovečkami',
-    startBtn: '▶ Začít počítat',
-    limitNote: 'Předgenerováno 1–30 oveček',
-    labels: ['🐢 Pomalu','🐑 Normálně','🐇 Rychle'],
-    sheep: ['jedna ovečka','dvě ovečky','tři ovečky','čtyři ovečky','pět oveček',
-            'šest oveček','sedm oveček','osm oveček','devět oveček','deset oveček',
-            'jedenáct oveček','dvanáct oveček','třináct oveček','čtrnáct oveček','patnáct oveček',
-            'šestnáct oveček','sedmnáct oveček','osmnáct oveček','devatenáct oveček','dvacet oveček',
-            'dvacet jedna oveček','dvacet dvě ovečky','dvacet tři ovečky','dvacet čtyři ovečky','dvacet pět oveček',
-            'dvacet šest oveček','dvacet sedm oveček','dvacet osm oveček','dvacet devět oveček','třicet oveček'],
-    dir: 'audio_cs',
+    done: '😴 Sladké sny...',
+    texts: buildCzechTexts(),
   },
-  de: {
+  leni: {
+    dir: 'audio_leni',
+    lang: 'de',
+    labelVoice: 'Stimme',
+    labelCount: 'Anzahl Schäfchen',
+    labelSpeed: 'Tempo',
+    startBtn: '▶ Zählen beginnen',
+    stopBtn: '⏹ Stoppen',
+    speedLabels: ['🐢 Langsam','🐑 Normal','🐇 Schnell'],
     title: 'Schäfchen zählen',
     subtitle: 'Schlaf gut und träum schön...',
-    lblCount: 'Anzahl Schäfchen',
-    lblSpeed: 'Pause zwischen Schäfchen',
+    done: '😴 Süße Träume...',
+    texts: buildGermanTexts(),
+  },
+  jan: {
+    dir: 'audio_jan',
+    lang: 'de',
+    labelVoice: 'Stimme',
+    labelCount: 'Anzahl Schäfchen',
+    labelSpeed: 'Tempo',
     startBtn: '▶ Zählen beginnen',
-    limitNote: 'Vorerzeugt: 1–30 Schäfchen',
-    labels: ['🐢 Langsam','🐑 Normal','🐇 Schnell'],
-    sheep: ['ein Schäfchen','zwei Schäfchen','drei Schäfchen','vier Schäfchen','fünf Schäfchen',
-            'sechs Schäfchen','sieben Schäfchen','acht Schäfchen','neun Schäfchen','zehn Schäfchen',
-            'elf Schäfchen','zwölf Schäfchen','dreizehn Schäfchen','vierzehn Schäfchen','fünfzehn Schäfchen',
-            'sechzehn Schäfchen','siebzehn Schäfchen','achtzehn Schäfchen','neunzehn Schäfchen','zwanzig Schäfchen',
-            'einundzwanzig Schäfchen','zweiundzwanzig Schäfchen','dreiundzwanzig Schäfchen','vierundzwanzig Schäfchen','fünfundzwanzig Schäfchen',
-            'sechsundzwanzig Schäfchen','siebenundzwanzig Schäfchen','achtundzwanzig Schäfchen','neunundzwanzig Schäfchen','dreißig Schäfchen'],
-    dir: 'audio_de',
+    stopBtn: '⏹ Stoppen',
+    speedLabels: ['🐢 Langsam','🐑 Normal','🐇 Schnell'],
+    title: 'Schäfchen zählen',
+    subtitle: 'Schlaf gut und träum schön...',
+    done: '😴 Süße Träume...',
+    texts: buildGermanTexts(),
   },
 };
 
+function buildCzechTexts() {
+  const ones = ['','jedna','dvě','tři','čtyři','pět','šest','sedm','osm','devět',
+    'deset','jedenáct','dvanáct','třináct','čtrnáct','patnáct','šestnáct','sedmnáct','osmnáct','devatenáct','dvacet'];
+  const tens = ['','','dvacet','třicet','čtyřicet','padesát','šedesát','sedmdesát','osmdesát','devadesát'];
+  const hunds = ['','sto','dvě stě','tři sta','čtyři sta','pět set','šest set','sedm set','osm set','devět set'];
+  function num(n) {
+    if (n <= 20) return ones[n];
+    if (n < 100) { const [t,o] = [Math.floor(n/10), n%10]; return tens[t] + (o ? ' '+ones[o] : ''); }
+    const [h,r] = [Math.floor(n/100), n%100]; return hunds[h] + (r ? ' '+num(r) : '');
+  }
+  function form(n) { return n===1?'ovečka':n<=4?'ovečky':'oveček'; }
+  return Array.from({length:100},(_,i)=>`${num(i+1)} ${form(i+1)}`);
+}
+
+function buildGermanTexts() {
+  const ones = ['','ein','zwei','drei','vier','fünf','sechs','sieben','acht','neun',
+    'zehn','elf','zwölf','dreizehn','vierzehn','fünfzehn','sechzehn','siebzehn','achtzehn','neunzehn','zwanzig'];
+  const tens = ['','','zwanzig','dreißig','vierzig','fünfzig','sechzig','siebzig','achtzig','neunzig'];
+  function num(n) {
+    if (n <= 20) return ones[n];
+    if (n < 100) { const [t,o] = [Math.floor(n/10), n%10]; return (o ? ones[o]+'und' : '') + tens[t]; }
+    const [h,r] = [Math.floor(n/100), n%100]; return ones[h]+'hundert'+(r?num(r):'');
+  }
+  return Array.from({length:100},(_,i)=>`${num(i+1)} Schäfchen`);
+}
+
 // Stars
-(function() {
-  const c = document.getElementById('stars');
-  for (let i = 0; i < 120; i++) {
-    const s = document.createElement('div');
-    s.className = 'star';
-    const sz = Math.random() * 2.5 + 0.5;
-    s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--dur:${2+Math.random()*4}s;animation-delay:${Math.random()*5}s;`;
+(function(){
+  const c=document.getElementById('stars');
+  for(let i=0;i<120;i++){
+    const s=document.createElement('div'); s.className='star';
+    const sz=Math.random()*2.5+.5;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--dur:${2+Math.random()*4}s;animation-delay:${Math.random()*5}s;`;
     c.appendChild(s);
   }
 })();
 
 // Parade
-(function() {
-  const c = document.getElementById('parade');
-  for (let i = 0; i < 5; i++) {
-    const s = document.createElement('div');
-    s.className = 'parade-sheep';
-    s.textContent = '🐑';
-    const dur = 18 + Math.random() * 14;
-    s.style.cssText = `animation-duration:${dur}s;animation-delay:-${Math.random()*dur}s;font-size:${1.5+Math.random()}rem;`;
+(function(){
+  const c=document.getElementById('parade');
+  for(let i=0;i<5;i++){
+    const s=document.createElement('div'); s.className='parade-sheep'; s.textContent='🐑';
+    const dur=18+Math.random()*14;
+    s.style.cssText=`animation-duration:${dur}s;animation-delay:-${Math.random()*dur}s;font-size:${1.5+Math.random()}rem;`;
     c.appendChild(s);
   }
 })();
 
-let pauseMs = 3500;
+// total ms per sheep (audio + pause) — audio is ~1.5s so pause = total - 1500
+let totalMs = 5000;
 function setSpeed(btn) {
-  document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.speed-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  pauseMs = parseInt(btn.dataset.pause);
+  totalMs = parseInt(btn.dataset.total);
 }
 
-function applyLang() {
-  const lang = document.getElementById('lang').value;
-  const d = TEXTS[lang];
-  document.getElementById('title').textContent = d.title;
-  document.getElementById('subtitle').textContent = d.subtitle;
-  document.getElementById('lbl-count').textContent = d.lblCount;
-  document.getElementById('lbl-speed').textContent = d.lblSpeed;
-  document.getElementById('btnStart').textContent = d.startBtn;
-  document.getElementById('limit-note').textContent = d.limitNote;
+function applyVoice() {
+  const v = VOICES[document.getElementById('voice').value];
+  document.getElementById('title').textContent = v.title;
+  document.getElementById('subtitle').textContent = v.subtitle;
+  document.getElementById('lbl-voice').textContent = v.labelVoice;
+  document.getElementById('lbl-count').textContent = v.labelCount;
+  document.getElementById('lbl-speed').textContent = v.labelSpeed;
+  document.getElementById('btnStart').textContent = v.startBtn;
+  document.getElementById('btnStop').textContent = v.stopBtn;
   const btns = document.querySelectorAll('.speed-btn');
-  d.labels.forEach((l, i) => btns[i].textContent = l);
+  v.speedLabels.forEach((l,i)=>btns[i].textContent=l);
+  document.documentElement.lang = v.lang;
 }
 
-let running = false;
-let stopFlag = false;
-let currentAudio = null;
-let sleepTimer = null;
+let running=false, stopFlag=false, currentAudio=null, sleepTimer=null;
 
 function playAudio(src) {
-  return new Promise(resolve => {
-    const audio = new Audio(src);
-    currentAudio = audio;
-    audio.onended = resolve;
-    audio.onerror = resolve;
-    audio.play().catch(resolve);
+  return new Promise(resolve=>{
+    const a=new Audio(src); currentAudio=a;
+    a.onended=resolve; a.onerror=resolve;
+    a.play().catch(resolve);
   });
 }
-
 function sleep(ms) {
-  return new Promise(resolve => {
-    sleepTimer = setTimeout(resolve, ms);
-  });
+  return new Promise(resolve=>{ sleepTimer=setTimeout(resolve,ms); });
 }
 
 async function startCounting() {
-  if (running) return;
-  const lang = document.getElementById('lang').value;
-  const d = TEXTS[lang];
-  const total = Math.min(parseInt(document.getElementById('count').value) || 20, 30);
+  if(running) return;
+  const voiceKey = document.getElementById('voice').value;
+  const v = VOICES[voiceKey];
+  const total = Math.min(parseInt(document.getElementById('count').value)||20, 100);
 
-  running = true;
-  stopFlag = false;
+  running=true; stopFlag=false;
+  document.getElementById('btnStart').style.display='none';
+  document.getElementById('btnStop').style.display='block';
+  document.getElementById('playback').style.display='block';
+  document.getElementById('doneMsg').style.display='none';
+  document.getElementById('progressFill').style.width='0%';
 
-  document.getElementById('btnStart').style.display = 'none';
-  document.getElementById('btnStop').style.display = 'block';
-  document.getElementById('playback').style.display = 'block';
-  document.getElementById('doneMsg').style.display = 'none';
-  document.getElementById('progressFill').style.width = '0%';
+  const emojis=['🐑','🐏','🐑','🐑','🐏'];
 
-  const emojis = ['🐑','🐏','🐑','🐑','🐏'];
+  for(let i=1;i<=total;i++){
+    if(stopFlag) break;
+    document.getElementById('currentText').textContent=v.texts[i-1];
+    document.getElementById('progressFill').style.width=`${(i/total)*100}%`;
+    document.getElementById('sheepEmoji').textContent=emojis[i%emojis.length];
 
-  for (let i = 1; i <= total; i++) {
-    if (stopFlag) break;
+    const t0=Date.now();
+    await playAudio(`${v.dir}/${i}.mp3`);
+    if(stopFlag) break;
 
-    document.getElementById('currentText').textContent = d.sheep[i - 1];
-    document.getElementById('progressFill').style.width = `${(i / total) * 100}%`;
-    document.getElementById('sheepEmoji').textContent = emojis[i % emojis.length];
-
-    await playAudio(`${d.dir}/${i}.mp3`);
-    if (stopFlag) break;
-
-    await sleep(pauseMs);
+    // Wait the remainder of totalMs so overall cadence stays constant
+    const elapsed=Date.now()-t0;
+    const remaining=totalMs-elapsed;
+    if(remaining>50) await sleep(remaining);
   }
 
-  running = false;
-  document.getElementById('btnStart').style.display = 'block';
-  document.getElementById('btnStop').style.display = 'none';
-
-  if (!stopFlag) {
-    document.getElementById('doneMsg').style.display = 'block';
-    document.getElementById('currentText').textContent = '😴 zzz...';
-    document.getElementById('progressFill').style.width = '100%';
+  running=false;
+  document.getElementById('btnStart').style.display='block';
+  document.getElementById('btnStop').style.display='none';
+  if(!stopFlag){
+    document.getElementById('doneMsg').style.display='block';
+    document.getElementById('doneMsg').textContent=v.done;
+    document.getElementById('currentText').textContent='😴 zzz...';
+    document.getElementById('progressFill').style.width='100%';
   }
 }
 
 function stopCounting() {
-  stopFlag = true;
-  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
-  if (sleepTimer) { clearTimeout(sleepTimer); sleepTimer = null; }
-  running = false;
-  document.getElementById('btnStart').style.display = 'block';
-  document.getElementById('btnStop').style.display = 'none';
+  stopFlag=true;
+  if(currentAudio){currentAudio.pause();currentAudio=null;}
+  if(sleepTimer){clearTimeout(sleepTimer);sleepTimer=null;}
+  running=false;
+  document.getElementById('btnStart').style.display='block';
+  document.getElementById('btnStop').style.display='none';
 }
 
-applyLang();
+applyVoice();
 </script>
 </body>
 </html>
